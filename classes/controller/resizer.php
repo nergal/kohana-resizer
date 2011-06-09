@@ -7,39 +7,39 @@ class Controller_Resizer extends Controller {
 
 	public function before()
 	{
-	    $this->cache_dir = Kohana::$cache_dir . DIRECTORY_SEPARATOR . 'resizer';
-	    if (!file_exists($this->cache_dir)) {
+	    $this->cache_dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'resizer';
+	    if ( ! file_exists($this->cache_dir)) {
 		mkdir($this->cache_dir, 0700, TRUE);
 	    }
 	}
 	
-	private function _getCachePath($source_path, $type, $width, $height, $filename)
+	private function _get_cache_path($source_path, $type, $width, $height, $filename)
 	{
 		$path = array($this->cache_dir);
 		$path[] = $source_path;
 		$path[] = "{$type}_{$width}x{$height}";
 		$path = implode(DIRECTORY_SEPARATOR, $path);
 		
-		if (!file_exists($path)) {
+		if ( ! file_exists($path)) {
 			mkdir($path, 0700, TRUE);
 		}
 		
-		$file = $path . DIRECTORY_SEPARATOR . $filename . '.jpeg';
+		$file = $path.DIRECTORY_SEPARATOR.$filename.'.jpeg';
 		return $file;
 	}
 
 	public function action_index($source_path, $type, $width, $height, $filename, $ext)
 	{
-		$path = array(PUBPATH . 'uploads');
+		$path = array(DOCROOT.'uploads');
 		$path[] = $source_path;
-		$path[] = $filename . '.' . $ext;
+		$path[] = $filename.'.'.$ext;
 		$path = implode(DIRECTORY_SEPARATOR, $path);
 		
 		$config = Kohana::config('resizer');
 		
 		$allow_resize = FALSE;
-		foreach($config->get('allowed_sizes') as $size) {
-			if (!is_array($size)) {
+		foreach ($config->get('allowed_sizes') as $size) {
+			if ( ! is_array($size)) {
 				$size = explode('x', $size);
 			}
 			
@@ -52,9 +52,9 @@ class Controller_Resizer extends Controller {
 		}
 		
 		if (realpath($path) AND $allow_resize === TRUE) {
-			$cache_file = $this->_getCachePath($source_path, $type, $width, $height, $filename);
+			$cache_file = $this->_get_cache_path($source_path, $type, $width, $height, $filename);
 			
-			if (!file_exists($cache_file)) {
+			if ( ! file_exists($cache_file)) {
 				$image = Image::factory($path, 'gd');
 				switch ($type) {
 					case 'res':
